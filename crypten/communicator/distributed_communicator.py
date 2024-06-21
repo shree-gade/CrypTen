@@ -16,7 +16,8 @@ import torch
 import torch.distributed as dist
 from crypten.common import serial
 from torch.distributed import ReduceOp
-
+import datetime
+from datetime import timedelta
 from .communicator import Communicator, _logging
 
 
@@ -49,12 +50,14 @@ class DistributedCommunicator(Communicator):
             logging.info("==================")
             logging.info("DistributedCommunicator with rank %d" % self.rank)
             logging.info("==================")
+            logging.info("Using Forked CrypTen Repo. Timeout 10x, 300min.")
 
             # initialize process group:
             total_ws = self.world_size + 1 if init_ttp else self.world_size
             dist.init_process_group(
                 backend=self.distributed_backend,
                 init_method=self.rendezvous,
+                timeout=datetime.timedelta(0, 18000),
                 world_size=total_ws,
                 rank=self.rank,
             )
